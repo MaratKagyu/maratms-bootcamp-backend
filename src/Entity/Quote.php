@@ -184,4 +184,25 @@ class Quote
                 ? $this->getLastChangedDateTime()->format("Y-m-d H:i:s") : '',
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function toExpandedDataArray(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "ownerAppId" => $this->getOwnerApp()
+                ? $this->getOwnerApp()->getId() : 0,
+            "authorId" => $this->getAuthor()
+                ? $this->getAuthor()->getId() : 0,
+            "authorName" => $this->getAuthor()
+                ? $this->getAuthor()->getName() : "",
+            "text" => $this->getText(),
+            "createdDateTime" => $this->getCreatedDateTime()
+                ? $this->getCreatedDateTime()->format("Y-m-d H:i:s") : '',
+            "lastChangedDateTime" => $this->getLastChangedDateTime()
+                ? $this->getLastChangedDateTime()->format("Y-m-d H:i:s") : '',
+        ];
+    }
 }

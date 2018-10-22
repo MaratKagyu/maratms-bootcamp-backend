@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\ClientApp;
 use App\Entity\Quote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -19,22 +20,18 @@ class QuoteRepository extends ServiceEntityRepository
         parent::__construct($registry, Quote::class);
     }
 
-//    /**
-//     * @return Quote[] Returns an array of Quote objects
-//     */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param ClientApp $clientApp
+     * @return array
+     */
+    public function findByOwnerApp(ClientApp $clientApp): array
     {
-        return $this->createQueryBuilder('q')
-            ->andWhere('q.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('q.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        // TODO: Optimize authors loading
+        return $this->findBy(
+            ["ownerApp" => $clientApp],
+            ["text" => "ASC"]
+        );
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?Quote

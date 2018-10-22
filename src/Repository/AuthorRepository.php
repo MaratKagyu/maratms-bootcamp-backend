@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Author;
+use App\Entity\ClientApp;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -19,32 +20,33 @@ class AuthorRepository extends ServiceEntityRepository
         parent::__construct($registry, Author::class);
     }
 
-//    /**
-//     * @return Author[] Returns an array of Author objects
-//     */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Author
+    /**
+     * Finds an existing author or creates a new one
+     * @param string $authorName
+     * @param ClientApp $ownerApp
+     * @return Author|null
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function getByName(string $authorName, ClientApp $ownerApp): ?Author
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $author = $this->findOneBy([
+            "name" => $authorName,
+            "ownerApp" => $ownerApp
+        ]);
+
+        if (! $author) {
+            $author = new Author();
+            $author
+                ->setOwnerApp($ownerApp)
+                ->setName($authorName)
+            ;
+
+            $this->getEntityManager()->persist($author);
+        }
+
+        return $author;
+
     }
-    */
+
 }
