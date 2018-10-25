@@ -44,6 +44,32 @@ class QuotesController extends Controller
     }
 
     /**
+     * @param QuoteAccessManager $accessManager
+     * @param QuoteRepository $quoteRepository
+     * @Route(
+     *     "/quotes/random",
+     *     name="getRandomQuoteAction",
+     *     methods={"GET"}
+     * )
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws HttpJsonException
+     */
+    public function getRandomQuoteAction(QuoteAccessManager $accessManager, QuoteRepository $quoteRepository)
+    {
+        $quote = $quoteRepository->getRandomQuoteByOwnerApp($accessManager->getClientApp());
+        if (! $quote) {
+            throw new HttpJsonException([
+                "status" => "error",
+                "message" => "No quotes found",
+                "code" => "quotes_not_found",
+            ], 404);
+        }
+
+        return $this->json($quote->toExpandedDataArray());
+
+    }
+
+    /**
      * @param int $authorId
      * @param AuthorAccessManager $accessManager
      * @param QuoteRepository $quoteRepository

@@ -35,6 +35,28 @@ class QuoteRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param ClientApp $clientApp
+     * @return Quote
+     */
+    public function getRandomQuoteByOwnerApp(ClientApp $clientApp): Quote
+    {
+        $quoteIds = $this->getEntityManager()->createQuery(
+            "
+            SELECT" . " quote.id FROM \\App\\Entity\\Quote quote
+            WHERE quote.ownerApp = :ownerApp
+            "
+        )->setParameters([
+            "ownerApp" =>  $clientApp
+        ])->getResult();
+
+        shuffle($quoteIds);
+
+        $randomQuoteId = array_pop($quoteIds)['id'];
+
+        return $this->find($randomQuoteId);
+    }
+
+    /**
      * @param Author $author
      * @return array
      */

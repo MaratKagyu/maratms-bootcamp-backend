@@ -97,6 +97,57 @@ class QuotesControllerTest extends WebTestCase
         $this->assertArraySubset($expectedResponse, $responseData);
     }
 
+    public function testGetRandomQuoteAction()
+    {
+        $this->client->request("GET", "/quotes/random");
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        $responseData = json_decode($response->getContent(), true);
+
+        // Remove timestamps (because they're always new)
+        unset($responseData['createdDateTime']);
+        unset($responseData['lastChangedDateTime']);
+
+        $availableQuotes = [
+            [
+                "id" => 1,
+                "ownerAppId" => 1,
+                "authorId" => 1,
+                "authorName" => "Stephen King",
+                "text" => "Get busy living or get busy dying"
+            ],
+            [
+                "id" => 5,
+                "ownerAppId" => 1,
+                "authorId" => 1,
+                "authorName" => "Stephen King",
+                "text" => "Talent is cheaper than table salt. What separates the talented individual from the "
+                    . "successful one is a lot of hard work."
+            ],
+            [
+                "id" => 2,
+                "ownerAppId" => 1,
+                "authorId" => 2,
+                "authorName" => "Mark Caine",
+                "text" => "The first step toward success is taken when you refuse to be a captive of the environment "
+                    . "in which you first find yourself."
+            ],
+            [
+                "id" => 3,
+                "ownerAppId" => 1,
+                "authorId" => 3,
+                "authorName" => "Mark Twain",
+                "text" => "Twenty years from now you will be more disappointed by the things that you didn’t do than "
+                    . "by the ones you did do."
+            ],
+        ];
+
+        $this->assertTrue(in_array($responseData, $availableQuotes));
+    }
+
+
     public function testGetQuoteAction()
     {
         /////
