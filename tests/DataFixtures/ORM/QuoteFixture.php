@@ -35,49 +35,78 @@ class QuoteFixture extends Fixture
             throw new TestException("Couldn't load test client apps");
         }
 
+        /* @var Author[] $authorList */
+        $authorList = array_map(
+            function ($authorData) use ($manager){
+                $author = new Author();
+                $author
+                    ->setName($authorData['name'])
+                    ->setOwnerApp($authorData['clientApp'])
+                ;
+
+                $manager->persist($author);
+                return $author;
+            },
+            [
+                [
+                    "name" => "Stephen King",
+                    "clientApp" => $clientApp1,
+                ],
+                [
+                    "name" => "Mark Caine",
+                    "clientApp" => $clientApp1,
+                ],
+                [
+                    "name" => "Mark Twain",
+                    "clientApp" => $clientApp1,
+                ],
+                [
+                    "name" => "Audre Lorde",
+                    "clientApp" => $clientApp2,
+                ],
+            ]
+        );
+
+
+
         $quotesDataList = [
             [// 1
-                "author" => "Stephen King",
+                "author" => $authorList[0],
                 "text" => "Get busy living or get busy dying",
-                "clientApp" => $clientApp1,
             ],
             [// 2
-                "author" => "Mark Caine",
+                "author" => $authorList[1],
                 "text" => "The first step toward success is taken when you refuse to be a captive of the environment "
                     . "in which you first find yourself.",
-                "clientApp" => $clientApp1,
             ],
             [// 3
-                "author" => "Mark Twain",
+                "author"  => $authorList[2],
                 "text" => "Twenty years from now you will be more disappointed by the things that you didn’t do than "
                     . "by the ones you did do.",
-                "clientApp" => $clientApp1,
             ],
             [// 4
-                "author" => "Audre Lorde",
+                "author" => $authorList[3],
                 "text" => "When I dare to be powerful – to use my strength in the service of my vision, then it "
                     . "becomes less and less important whether I am afraid.",
-                "clientApp" => $clientApp2,
+            ],
+            [// 5
+                "author" => $authorList[0],
+                "text" => "Talent is cheaper than table salt. What separates the talented individual from the "
+                    . "successful one is a lot of hard work.",
             ],
         ];
 
-
         foreach ($quotesDataList as $quoteData) {
-            $author = new Author();
-            $author
-                ->setOwnerApp($quoteData['clientApp'])
-                ->setName($quoteData['author'])
-            ;
 
-            $manager->persist($author);
+            /* @var Author $author */
+            $author = $quoteData['author'];
 
             $quote = new Quote();
             $quote
                 ->setAuthor($author)
                 ->setText($quoteData['text'])
-                ->setOwnerApp($quoteData['clientApp'])
+                ->setOwnerApp($author->getOwnerApp())
             ;
-
 
             $manager->persist($quote);
         }

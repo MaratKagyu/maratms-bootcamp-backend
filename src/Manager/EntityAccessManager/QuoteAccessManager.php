@@ -8,6 +8,7 @@
 
 namespace App\Manager\EntityAccessManager;
 
+use App\Entity\Author;
 use App\Entity\Quote;
 use App\Exception\HttpJsonException;
 use App\Manager\AccessManager;
@@ -21,7 +22,7 @@ class QuoteAccessManager extends AccessManager
      */
     public function clientAppIsAssociatedWithQuote(Quote $quote): bool
     {
-        if ($this->getClientApp() && $quote->getAuthor()) {
+        if ($this->getClientApp() && $quote->getOwnerApp()) {
             return ($this->getClientApp()->getId() == $quote->getOwnerApp()->getId());
         }
         return false;

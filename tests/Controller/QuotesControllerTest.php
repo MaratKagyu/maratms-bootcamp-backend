@@ -26,7 +26,6 @@ class QuotesControllerTest extends WebTestCase
      */
     private $client;
 
-
     /**
      * @var EntityManagerInterface
      */
@@ -51,8 +50,6 @@ class QuotesControllerTest extends WebTestCase
         $fixture->load($this->entityManager);
     }
 
-
-
     public function testQuoteListAction()
     {
         $this->client->request("GET", "/quotes");
@@ -71,6 +68,14 @@ class QuotesControllerTest extends WebTestCase
                 "text" => "Get busy living or get busy dying"
             ],
             [
+                "id" => 5,
+                "ownerAppId" => 1,
+                "authorId" => 1,
+                "authorName" => "Stephen King",
+                "text" => "Talent is cheaper than table salt. What separates the talented individual from the "
+                    . "successful one is a lot of hard work."
+            ],
+            [
                 "id" => 2,
                 "ownerAppId" => 1,
                 "authorId" => 2,
@@ -86,13 +91,11 @@ class QuotesControllerTest extends WebTestCase
                 "text" => "Twenty years from now you will be more disappointed by the things that you didn’t do than "
                     . "by the ones you did do."
             ],
-
         ];
 
-        $this->assertEquals(3, count($responseData));
+        $this->assertEquals(4, count($responseData));
         $this->assertArraySubset($expectedResponse, $responseData);
     }
-
 
     public function testGetQuoteAction()
     {
@@ -123,7 +126,6 @@ class QuotesControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
 
-
     public function testSaveQuoteAction()
     {
         ////
@@ -134,7 +136,7 @@ class QuotesControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
         $expectedResponse = [
-            "id" => 5,
+            "id" => 6,
             "ownerAppId" => 1,
             "authorId" => 5,
             "authorName" => "My Author",
@@ -143,16 +145,15 @@ class QuotesControllerTest extends WebTestCase
 
         $this->assertArraySubset($expectedResponse, $responseData);
 
-
         ////
         // 2. Update an existing quote
-        $this->client->request("POST", "/quotes/5", ["authorName" => "My Author 1", "text" => "My Text 1"]);
+        $this->client->request("POST", "/quotes/6", ["authorName" => "My Author 1", "text" => "My Text 1"]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
         $expectedResponse = [
-            "id" => 5,
+            "id" => 6,
             "ownerAppId" => 1,
             "authorId" => 6, // new author should be created
             "authorName" => "My Author 1",
@@ -161,14 +162,12 @@ class QuotesControllerTest extends WebTestCase
 
         $this->assertArraySubset($expectedResponse, $responseData);
 
-
         /////
         // 3. Update a quote the app doesn't have the access to
         $this->client->request("POST", "/quotes/4", ["authorName" => "My Author 1", "text" => "My Text 1"]);
         $response = $this->client->getResponse();
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
-
 
     public function testDeleteQuoteAction()
     {
@@ -189,11 +188,52 @@ class QuotesControllerTest extends WebTestCase
         $deletedQuote = $this->entityManager->getRepository(Quote::class)->find(3);
         $this->assertEquals(null, $deletedQuote);
 
-
         /////
         // 2. Delete a quote the app doesn't have the access to
         $this->client->request("POST", "/quotes/4", ["authorName" => "My Author 1", "text" => "My Text 1"]);
         $response = $this->client->getResponse();
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
+
+
+    public function testGetQuotesByAuthorAction()
+    {
+        /////
+        // 1. Load author quotes the app has access to
+        $this->client->request("GET", "/quotes/by_author/1");
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        $responseData = json_decode($response->getContent(), true);
+
+        $expectedResponse = [
+            [
+                "id" => 1,
+                "ownerAppId" => 1,
+                "authorId" => 1,
+                "authorName" => "Stephen King",
+                "text" => "Get busy living or get busy dying"
+            ],
+            [
+                "id" => 5,
+                "ownerAppId" => 1,
+                "authorId" => 1,
+                "authorName" => "Stephen King",
+                "text" => "Talent is cheaper than table salt. What separates the talented individual from the "
+                    . "successful one is a lot of hard work."
+            ]
+        ];
+
+        $this->assertArraySubset($expectedResponse, $responseData);
+        $this->assertEquals(2, count($responseData));
+
+        ////
+        // 1. Load author quotes the app has NO access to
+        $this->client->request("GET", "/quotes/by_author/4");
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
 }

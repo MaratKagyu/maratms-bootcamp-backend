@@ -10,13 +10,13 @@ namespace App\Controller;
 
 use App\Entity\Quote;
 use App\Exception\HttpJsonException;
+use App\Manager\EntityAccessManager\AuthorAccessManager;
 use App\Manager\EntityAccessManager\QuoteAccessManager;
 use App\Repository\AuthorRepository;
 use App\Repository\QuoteRepository;
 use App\Service\Validator;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 
@@ -40,6 +40,47 @@ class QuotesController extends Controller
                 return $quote->toExpandedDataArray();
             },
             $quoteRepository->findByOwnerApp($accessManager->getClientApp())
+        ));
+    }
+
+    /**
+     * @param int $authorId
+     * @param AuthorAccessManager $accessManager
+     * @param QuoteRepository $quoteRepository
+     * @param AuthorRepository $authorRepository
+     * @Route(
+     *     "/quotes/by_author/{authorId}",
+     *     name="getQuotesByAuthorAction",
+     *     requirements={"quoteId"="\d+"},
+     *     methods={"GET"}
+     * )
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws HttpJsonException
+     */
+    public function getQuotesByAuthorAction(
+        int $authorId,
+        AuthorAccessManager $accessManager,
+        QuoteRepository $quoteRepository,
+        AuthorRepository $authorRepository
+    ) {
+        $author = $authorRepository->find($authorId);
+        if (! $author) {
+            throw new HttpJsonException([
+                "status" => "error",
+                "message" => "Author not found",
+                "code" => "author_not_found",
+                "authorId" => $authorId,
+            ], 404);
+        }
+
+        $accessManager->readAccessRequired($author);
+
+
+        return $this->json(array_map(
+            function (Quote $quote) {
+                return $quote->toExpandedDataArray();
+            },
+            $quoteRepository->findByAuthor($author)
         ));
     }
 

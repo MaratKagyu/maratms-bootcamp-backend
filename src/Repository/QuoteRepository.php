@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Author;
 use App\Entity\ClientApp;
 use App\Entity\Quote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -29,6 +30,18 @@ class QuoteRepository extends ServiceEntityRepository
         // TODO: Optimize authors loading
         return $this->findBy(
             ["ownerApp" => $clientApp],
+            ["text" => "ASC"]
+        );
+    }
+
+    /**
+     * @param Author $author
+     * @return array
+     */
+    public function findByAuthor(Author $author): array
+    {
+        return $this->findBy(
+            ["author" => $author],
             ["text" => "ASC"]
         );
     }

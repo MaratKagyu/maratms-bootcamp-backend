@@ -38,7 +38,6 @@ class ClientAppFixture extends Fixture
             $manager->persist($clientApp);
         }
 
-
         $manager->flush();
     }
 }
