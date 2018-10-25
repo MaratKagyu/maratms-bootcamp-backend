@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * TODO: Add indexes
  * @ORM\Entity(repositoryClass="App\Repository\ClientAppRepository")
  */
 class ClientApp
@@ -24,6 +25,12 @@ class ClientApp
      * @ORM\Column(type="text")
      */
     private $name = "";
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255)
+     */
+    private $token = "";
 
     /**
      * @var int
@@ -78,6 +85,24 @@ class ClientApp
     public function setName(string $name): ClientApp
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken(): string
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     * @return ClientApp
+     */
+    public function setToken(string $token): ClientApp
+    {
+        $this->token = $token;
         return $this;
     }
 

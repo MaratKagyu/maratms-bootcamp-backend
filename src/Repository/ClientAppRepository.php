@@ -19,4 +19,12 @@ class ClientAppRepository extends ServiceEntityRepository
         parent::__construct($registry, ClientApp::class);
     }
 
+    /**
+     * @param $token
+     * @return ClientApp|null
+     */
+    public function findByToken($token): ?ClientApp
+    {
+        return $this->findOneBy(['token' => $token]);
+    }
 }

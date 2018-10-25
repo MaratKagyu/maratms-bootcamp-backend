@@ -216,7 +216,6 @@ class QuotesController extends Controller
 
     }
 
-
     /**
      * @param int $quoteId
      * @param QuoteAccessManager $accessManager
