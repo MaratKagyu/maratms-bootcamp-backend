@@ -35,7 +35,8 @@ class QuotesControllerTest extends WebTestCase
      * @throws \Doctrine\ORM\Tools\ToolsException
      * @throws TestException
      */
-    public function setUp() {
+    public function setUp()
+    {
         self::bootKernel();
 
         DatabasePrimer::prime(self::$kernel);
@@ -52,7 +53,9 @@ class QuotesControllerTest extends WebTestCase
 
     public function testQuoteListAction()
     {
-        $this->client->request("GET", "/quotes");
+        ////
+        // 1. Load quotes for the existing app
+        $this->client->request("GET", "/quotes", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -95,11 +98,20 @@ class QuotesControllerTest extends WebTestCase
 
         $this->assertEquals(4, count($responseData));
         $this->assertArraySubset($expectedResponse, $responseData);
+
+        ////
+        // 2. Load quotes for invalid app
+        $this->client->request("GET", "/quotes", ["token" => "Invalid token"]);
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
     }
 
     public function testGetRandomQuoteAction()
     {
-        $this->client->request("GET", "/quotes/random");
+        ////
+        // 1. Load random quote for the existing app
+        $this->client->request("GET", "/quotes/random", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -145,6 +157,13 @@ class QuotesControllerTest extends WebTestCase
         ];
 
         $this->assertTrue(in_array($responseData, $availableQuotes));
+
+        ////
+        // 2. Load random quote for invalid app
+        $this->client->request("GET", "/quotes/random", ["token" => "Invalid token"]);
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
     }
 
 
@@ -152,7 +171,7 @@ class QuotesControllerTest extends WebTestCase
     {
         /////
         // 1. Load a quote the app has access to
-        $this->client->request("GET", "/quotes/1");
+        $this->client->request("GET", "/quotes/1", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -171,17 +190,46 @@ class QuotesControllerTest extends WebTestCase
 
         /////
         // 2. Load a quote the app has no access to
-        $this->client->request("GET", "/quotes/4");
+        $this->client->request("GET", "/quotes/4", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+
+        /////
+        // 2. Load a quote using invalid app token
+        $this->client->request("GET", "/quotes/4", ["token" => "Invalid token"]);
+        $response = $this->client->getResponse();
+
+        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
     }
 
     public function testSaveQuoteAction()
     {
         ////
+        // 0. Add a new quote using invalid token
+        $this->client->request(
+            "POST",
+            "/quotes/0",
+            [
+                "authorName" => "My Author",
+                "text" => "My Text",
+                "token" => "Invalid token"
+            ]
+        );
+        $response = $this->client->getResponse();
+        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+
+        ////
         // 1. Add a new quote
-        $this->client->request("POST", "/quotes/0", ["authorName" => "My Author", "text" => "My Text"]);
+        $this->client->request(
+            "POST",
+            "/quotes/0",
+            [
+                "authorName" => "My Author",
+                "text" => "My Text",
+                "token" => ClientAppFixture::TEST_TOKEN_1
+            ]
+        );
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -198,7 +246,15 @@ class QuotesControllerTest extends WebTestCase
 
         ////
         // 2. Update an existing quote
-        $this->client->request("POST", "/quotes/6", ["authorName" => "My Author 1", "text" => "My Text 1"]);
+        $this->client->request(
+            "POST",
+            "/quotes/6",
+            [
+                "authorName" => "My Author 1",
+                "text" => "My Text 1",
+                "token" => ClientAppFixture::TEST_TOKEN_1
+            ]
+        );
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -215,7 +271,15 @@ class QuotesControllerTest extends WebTestCase
 
         /////
         // 3. Update a quote the app doesn't have the access to
-        $this->client->request("POST", "/quotes/4", ["authorName" => "My Author 1", "text" => "My Text 1"]);
+        $this->client->request(
+            "POST",
+            "/quotes/4",
+            [
+                "authorName" => "My Author 1",
+                "text" => "My Text 1",
+                "token" => ClientAppFixture::TEST_TOKEN_1
+            ]
+        );
         $response = $this->client->getResponse();
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
@@ -224,7 +288,7 @@ class QuotesControllerTest extends WebTestCase
     {
         ////
         // 1. Delete an existing quote
-        $this->client->request("DELETE", "/quotes/3");
+        $this->client->request("DELETE", "/quotes/3", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -241,7 +305,15 @@ class QuotesControllerTest extends WebTestCase
 
         /////
         // 2. Delete a quote the app doesn't have the access to
-        $this->client->request("POST", "/quotes/4", ["authorName" => "My Author 1", "text" => "My Text 1"]);
+        $this->client->request(
+            "POST",
+            "/quotes/4",
+            [
+                "authorName" => "My Author 1",
+                "text" => "My Text 1",
+                "token" => ClientAppFixture::TEST_TOKEN_1
+            ]
+        );
         $response = $this->client->getResponse();
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
     }
@@ -251,7 +323,7 @@ class QuotesControllerTest extends WebTestCase
     {
         /////
         // 1. Load author quotes the app has access to
-        $this->client->request("GET", "/quotes/by_author/1");
+        $this->client->request("GET", "/quotes/by_author/1", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
@@ -280,8 +352,8 @@ class QuotesControllerTest extends WebTestCase
         $this->assertEquals(2, count($responseData));
 
         ////
-        // 1. Load author quotes the app has NO access to
-        $this->client->request("GET", "/quotes/by_author/4");
+        // 2. Load author quotes the app has NO access to
+        $this->client->request("GET", "/quotes/by_author/4", ["token" => ClientAppFixture::TEST_TOKEN_1]);
         $response = $this->client->getResponse();
 
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());

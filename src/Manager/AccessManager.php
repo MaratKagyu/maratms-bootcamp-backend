@@ -8,9 +8,11 @@
 
 namespace App\Manager;
 
-
 use App\Entity\ClientApp;
+use App\Exception\HttpJsonException;
 use App\Repository\ClientAppRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class AccessManager
 {
@@ -20,12 +22,44 @@ class AccessManager
     private $clientAppRepo;
 
     /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var ClientApp
+     */
+    private $clientApp;
+
+    /**
      * AccessManager constructor.
+     * @param RequestStack $requestStack
      * @param ClientAppRepository $clientAppRepository
      */
-    public function __construct(ClientAppRepository $clientAppRepository)
+    public function __construct(RequestStack $requestStack, ClientAppRepository $clientAppRepository)
     {
         $this->clientAppRepo = $clientAppRepository;
+        $this->request = $requestStack->getCurrentRequest();
+    }
+
+    /**
+     * @return Request
+     */
+    private function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return null|string
+     */
+    private function getToken(): ?string
+    {
+        $token = $this->getRequest()->request->get('token', null);
+        if (! $token) {
+            $token = $this->getRequest()->query->get('token', null);
+        }
+        return $token;
     }
 
     /**
@@ -33,6 +67,30 @@ class AccessManager
      */
     public function getClientApp(): ?ClientApp
     {
-        return $this->clientAppRepo->find(1);
+        if (! $this->clientApp) {
+            $token = $this->getToken();
+            if (! $token) {
+                return null;
+            }
+            $this->clientApp = $token ? $this->clientAppRepo->findByToken($token) : null;
+        }
+        return $this->clientApp;
+    }
+
+    /**
+     * @throws HttpJsonException
+     * @return bool
+     */
+    public function authenticationRequired(): bool
+    {
+        if (! $this->getClientApp()) {
+            throw new HttpJsonException([
+                "status" => "error",
+                "message" => "Authentication required",
+                "code" => "authentication_required",
+            ], 401);
+        }
+
+        return true;
     }
 }

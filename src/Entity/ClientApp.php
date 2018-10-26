@@ -142,5 +142,18 @@ class ClientApp
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "token" => $this->getToken(),
+            "type" => $this->getType(),
+            "createDateTime" => $this->getCreateDateTime()->format("Y-m-d H:i:s"),
+        ];
+    }
 
 }

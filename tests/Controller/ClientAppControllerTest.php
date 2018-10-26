@@ -9,7 +9,6 @@
 namespace App\Tests\Controller;
 
 
-use App\Entity\Quote;
 use App\Exception\TestException;
 use App\Tests\DataFixtures\ORM\ClientAppFixture;
 use App\Tests\DataFixtures\ORM\QuoteFixture;
@@ -35,7 +34,8 @@ class ClientAppControllerTest extends WebTestCase
      * @throws \Doctrine\ORM\Tools\ToolsException
      * @throws TestException
      */
-    public function setUp() {
+    public function setUp()
+    {
         self::bootKernel();
 
         DatabasePrimer::prime(self::$kernel);

@@ -8,18 +8,22 @@
 
 namespace App\Service;
 
-
 use App\Exception\HttpJsonException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class Validator
+ * @package App\Service
+ */
 class Validator
 {
 
     /**
      * @param array $quoteData
      * @throws HttpJsonException
+     * @return bool
      */
-    public function validateQuoteData(array $quoteData)
+    public function validateQuoteData(array $quoteData): bool
     {
         $authorName = $quoteData['authorName'] ?? "";
         $text = $quoteData['text'] ?? "";
@@ -50,5 +54,7 @@ class Validator
                 "code" => "text_is_too_long",
             ], Response::HTTP_BAD_REQUEST);
         }
+
+        return true;
     }
 }

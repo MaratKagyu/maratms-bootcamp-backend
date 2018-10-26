@@ -20,7 +20,6 @@ class AuthorRepository extends ServiceEntityRepository
         parent::__construct($registry, Author::class);
     }
 
-
     /**
      * Finds an existing author or creates a new one
      * @param string $authorName
@@ -46,7 +45,5 @@ class AuthorRepository extends ServiceEntityRepository
         }
 
         return $author;
-
     }
-
 }

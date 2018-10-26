@@ -35,6 +35,8 @@ class QuotesController extends Controller
      */
     public function getQuoteListAction(QuoteAccessManager $accessManager, QuoteRepository $quoteRepository)
     {
+        $accessManager->authenticationRequired();
+
         return $this->json(array_map(
             function (Quote $quote) {
                 return $quote->toExpandedDataArray();
@@ -56,6 +58,8 @@ class QuotesController extends Controller
      */
     public function getRandomQuoteAction(QuoteAccessManager $accessManager, QuoteRepository $quoteRepository)
     {
+        $accessManager->authenticationRequired();
+
         $quote = $quoteRepository->getRandomQuoteByOwnerApp($accessManager->getClientApp());
         if (! $quote) {
             throw new HttpJsonException([
@@ -101,7 +105,6 @@ class QuotesController extends Controller
 
         $accessManager->readAccessRequired($author);
 
-
         return $this->json(array_map(
             function (Quote $quote) {
                 return $quote->toExpandedDataArray();
@@ -128,6 +131,8 @@ class QuotesController extends Controller
         QuoteAccessManager $accessManager,
         QuoteRepository $quoteRepository
     ) {
+        $accessManager->authenticationRequired();
+
         $quote = $quoteRepository->find($quoteId);
         if (! $quote) {
             throw new HttpJsonException([
@@ -170,6 +175,8 @@ class QuotesController extends Controller
         AuthorRepository $authorRepository,
         Validator $validator
     ) {
+        $accessManager->authenticationRequired();
+
         $em = $this->getDoctrine()->getManager();
 
         if ($quoteId) {
@@ -237,6 +244,8 @@ class QuotesController extends Controller
         QuoteRepository $quoteRepository,
         AuthorRepository $authorRepository
     ) {
+        $accessManager->authenticationRequired();
+
         $em = $this->getDoctrine()->getManager();
 
         $quote = $quoteRepository->find($quoteId);

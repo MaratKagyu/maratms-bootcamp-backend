@@ -23,7 +23,7 @@ class QuoteRepository extends ServiceEntityRepository
 
     /**
      * @param ClientApp $clientApp
-     * @return array
+     * @return Quote[]
      */
     public function findByOwnerApp(ClientApp $clientApp): array
     {
@@ -36,9 +36,9 @@ class QuoteRepository extends ServiceEntityRepository
 
     /**
      * @param ClientApp $clientApp
-     * @return Quote
+     * @return Quote|null
      */
-    public function getRandomQuoteByOwnerApp(ClientApp $clientApp): Quote
+    public function getRandomQuoteByOwnerApp(ClientApp $clientApp): ?Quote
     {
         $quoteIds = $this->getEntityManager()->createQuery(
             "
@@ -49,6 +49,10 @@ class QuoteRepository extends ServiceEntityRepository
             "ownerApp" =>  $clientApp
         ])->getResult();
 
+        if (! count($quoteIds)) {
+            return null;
+        }
+
         shuffle($quoteIds);
 
         $randomQuoteId = array_pop($quoteIds)['id'];
@@ -58,7 +62,7 @@ class QuoteRepository extends ServiceEntityRepository
 
     /**
      * @param Author $author
-     * @return array
+     * @return Quote[]
      */
     public function findByAuthor(Author $author): array
     {
@@ -67,16 +71,4 @@ class QuoteRepository extends ServiceEntityRepository
             ["text" => "ASC"]
         );
     }
-
-    /*
-    public function findOneBySomeField($value): ?Quote
-    {
-        return $this->createQueryBuilder('q')
-            ->andWhere('q.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

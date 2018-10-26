@@ -39,9 +39,12 @@ class AuthorAccessManager extends AccessManager
     /**
      * @param Author $author
      * @throws HttpJsonException
+     * @return bool
      */
-    public function readAccessRequired(Author $author)
+    public function readAccessRequired(Author $author): bool
     {
+        $this->authenticationRequired();
+
         if (! $this->isReadable($author)) {
             throw new HttpJsonException([
                 "status" => "error",
@@ -50,6 +53,8 @@ class AuthorAccessManager extends AccessManager
                 "authorId" => $author->getId(),
             ], Response::HTTP_FORBIDDEN);
         }
+
+        return true;
     }
 
     /**
@@ -64,9 +69,12 @@ class AuthorAccessManager extends AccessManager
     /**
      * @param Author $author
      * @throws HttpJsonException
+     * @return bool
      */
-    public function writeAccessRequired(Author $author)
+    public function writeAccessRequired(Author $author): bool
     {
+        $this->authenticationRequired();
+
         if (! $this->isWritable($author)) {
             throw new HttpJsonException([
                 "status" => "error",
@@ -75,5 +83,7 @@ class AuthorAccessManager extends AccessManager
                 "authorId" => $author->getId(),
             ], Response::HTTP_FORBIDDEN);
         }
+
+        return true;
     }
 }

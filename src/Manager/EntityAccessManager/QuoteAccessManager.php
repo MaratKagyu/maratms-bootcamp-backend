@@ -8,7 +8,6 @@
 
 namespace App\Manager\EntityAccessManager;
 
-use App\Entity\Author;
 use App\Entity\Quote;
 use App\Exception\HttpJsonException;
 use App\Manager\AccessManager;
@@ -40,9 +39,12 @@ class QuoteAccessManager extends AccessManager
     /**
      * @param Quote $quote
      * @throws HttpJsonException
+     * @return bool
      */
-    public function readAccessRequired(Quote $quote)
+    public function readAccessRequired(Quote $quote): bool
     {
+        $this->authenticationRequired();
+
         if (! $this->isReadable($quote)) {
             throw new HttpJsonException([
                 "status" => "error",
@@ -51,6 +53,8 @@ class QuoteAccessManager extends AccessManager
                 "quoteId" => $quote->getId(),
             ], Response::HTTP_FORBIDDEN);
         }
+
+        return true;
     }
 
     /**
@@ -65,9 +69,12 @@ class QuoteAccessManager extends AccessManager
     /**
      * @param Quote $quote
      * @throws HttpJsonException
+     * @return bool
      */
-    public function writeAccessRequired(Quote $quote)
+    public function writeAccessRequired(Quote $quote): bool
     {
+        $this->authenticationRequired();
+
         if (! $this->isWritable($quote)) {
             throw new HttpJsonException([
                 "status" => "error",
@@ -76,5 +83,7 @@ class QuoteAccessManager extends AccessManager
                 "quoteId" => $quote->getId(),
             ], Response::HTTP_FORBIDDEN);
         }
+
+        return true;
     }
 }
