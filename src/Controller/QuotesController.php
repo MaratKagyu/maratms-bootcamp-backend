@@ -199,6 +199,7 @@ class QuotesController extends Controller
             $em->persist($quote);
         }
 
+        $previousAuthor = $quote->getAuthor();
 
         $requestData = $request->request->all();
         // Throws a Bad Request error, if validation fails
@@ -209,7 +210,18 @@ class QuotesController extends Controller
 
         $author = $authorRepository->getByName($authorName, $accessManager->getClientApp());
 
-        // TODO: Delete the old author, if he doesn't have associated quotes
+        // Delete the previous author, if the are no other quotes under him.
+        if ($previousAuthor && ($previousAuthor->getId() !== $author->getId())) {
+            $quoteList = array_filter(
+                $quoteRepository->findByAuthor($previousAuthor),
+                function (Quote $quote) use ($quoteId){
+                    return $quote->getId() != $quoteId;
+                }
+            );
+            if (! count($quoteList)) {
+                $em->remove($previousAuthor);
+            }
+        }
 
         $quote
             ->setAuthor($author)
@@ -227,7 +239,6 @@ class QuotesController extends Controller
      * @param int $quoteId
      * @param QuoteAccessManager $accessManager
      * @param QuoteRepository $quoteRepository
-     * @param AuthorRepository $authorRepository
      * @Route(
      *     "/quotes/{quoteId}",
      *     name="deleteQuoteAction",
@@ -236,13 +247,11 @@ class QuotesController extends Controller
      * )
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @throws HttpJsonException
-     * @throws \Doctrine\ORM\ORMException
      */
     public function deleteQuoteAction(
         int $quoteId,
         QuoteAccessManager $accessManager,
-        QuoteRepository $quoteRepository,
-        AuthorRepository $authorRepository
+        QuoteRepository $quoteRepository
     ) {
         $accessManager->authenticationRequired();
 
@@ -261,11 +270,24 @@ class QuotesController extends Controller
 
         // Throws a forbidden error, in the app doesn't have the access
         $accessManager->writeAccessRequired($quote);
+        $author = $quote->getAuthor();
+
+        // Delete the author, if the are no other quotes under him.
+        if ($author) {
+            $quoteList = array_filter(
+                $quoteRepository->findByAuthor($author),
+                function (Quote $quote) use ($quoteId){
+                    return $quote->getId() != $quoteId;
+                }
+            );
+            if (! count($quoteList)) {
+                $em->remove($author);
+            }
+        }
 
         $em->remove($quote);
-        $em->flush();
 
-        // TODO: Delete the author, if he doesn't have associated quotes
+        $em->flush();
 
         return $this->json([
             "status" => "ok",

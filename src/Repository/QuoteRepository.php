@@ -27,11 +27,16 @@ class QuoteRepository extends ServiceEntityRepository
      */
     public function findByOwnerApp(ClientApp $clientApp): array
     {
-        // TODO: Optimize authors loading
-        return $this->findBy(
-            ["ownerApp" => $clientApp],
-            ["text" => "ASC"]
-        );
+        return $this->getEntityManager()->createQuery(
+            "
+            SELECT quote, author 
+            FROM \\App\\Entity\\Quote quote
+            LEFT JOIN quote.author author
+            WHERE quote.ownerApp = :ownerApp
+            "
+        )->setParameters([
+            "ownerApp" =>  $clientApp
+        ])->getResult();
     }
 
     /**

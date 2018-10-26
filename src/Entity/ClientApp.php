@@ -5,8 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * TODO: Add indexes
  * @ORM\Entity(repositoryClass="App\Repository\ClientAppRepository")
+ * @ORM\Table(name="client_app",indexes={@ORM\Index(name="token", columns={"token"})})
  */
 class ClientApp
 {
