@@ -35,7 +35,7 @@ class QuoteRepository extends ServiceEntityRepository
             WHERE quote.ownerApp = :ownerApp
             "
         )->setParameters([
-            "ownerApp" =>  $clientApp
+            "ownerApp" => $clientApp
         ])->getResult();
     }
 
@@ -51,10 +51,10 @@ class QuoteRepository extends ServiceEntityRepository
             WHERE quote.ownerApp = :ownerApp
             "
         )->setParameters([
-            "ownerApp" =>  $clientApp
+            "ownerApp" => $clientApp
         ])->getResult();
 
-        if (! count($quoteIds)) {
+        if (!count($quoteIds)) {
             return null;
         }
 

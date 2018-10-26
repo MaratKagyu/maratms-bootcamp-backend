@@ -45,7 +45,7 @@ class QuoteAccessManager extends AccessManager
     {
         $this->authenticationRequired();
 
-        if (! $this->isReadable($quote)) {
+        if (!$this->isReadable($quote)) {
             throw new HttpJsonException([
                 "status" => "error",
                 "message" => "The app doesn't have the access to the quote",
@@ -75,7 +75,7 @@ class QuoteAccessManager extends AccessManager
     {
         $this->authenticationRequired();
 
-        if (! $this->isWritable($quote)) {
+        if (!$this->isWritable($quote)) {
             throw new HttpJsonException([
                 "status" => "error",
                 "message" => "The app cannot write to the quote",

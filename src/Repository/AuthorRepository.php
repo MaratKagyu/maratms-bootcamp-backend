@@ -34,12 +34,11 @@ class AuthorRepository extends ServiceEntityRepository
             "ownerApp" => $ownerApp
         ]);
 
-        if (! $author) {
+        if (!$author) {
             $author = new Author();
             $author
                 ->setOwnerApp($ownerApp)
-                ->setName($authorName)
-            ;
+                ->setName($authorName);
 
             $this->getEntityManager()->persist($author);
         }

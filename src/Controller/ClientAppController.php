@@ -9,14 +9,7 @@
 namespace App\Controller;
 
 use App\Entity\ClientApp;
-use App\Entity\Quote;
-use App\Exception\HttpJsonException;
-use App\Manager\EntityAccessManager\AuthorAccessManager;
-use App\Manager\EntityAccessManager\QuoteAccessManager;
-use App\Repository\AuthorRepository;
 use App\Repository\ClientAppRepository;
-use App\Repository\QuoteRepository;
-use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,15 +28,15 @@ class ClientAppController extends Controller
      *     methods={"POST"}
      * )
      * @return \Symfony\Component\HttpFoundation\JsonResponse
-     * @throws HttpJsonException
      */
     public function registerAppAction(
         Request $request,
         EntityManagerInterface $entityManager,
         ClientAppRepository $clientAppRepository
-    ) {
+    )
+    {
         $token = $request->request->get('token', '');
-        if ((! $token) || (strlen($token) > 255)) {
+        if ((!$token) || (strlen($token) > 255)) {
             return $this->json([
                 "status" => "error",
                 "message" => "Invalid app token",
@@ -62,8 +55,7 @@ class ClientAppController extends Controller
             $clientApp
                 ->setName('')
                 ->setToken($token)
-                ->setType(ClientApp::APP_TYPE_WORDPRESS)
-            ;
+                ->setType(ClientApp::APP_TYPE_WORDPRESS);
 
             $entityManager->persist($clientApp);
             $entityManager->flush();

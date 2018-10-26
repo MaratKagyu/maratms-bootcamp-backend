@@ -44,8 +44,7 @@ class ClientAppFixture extends Fixture
             $clientApp
                 ->setName($clientAppData['name'])
                 ->setType($clientAppData['type'])
-                ->setToken($clientAppData['token'])
-            ;
+                ->setToken($clientAppData['token']);
 
             $manager->persist($clientApp);
         }

@@ -13,7 +13,6 @@ use App\Manager\EntityAccessManager\AuthorAccessManager;
 use PHPUnit\Framework\TestCase;
 use App\Entity\ClientApp;
 use App\Exception\HttpJsonException;
-use App\Manager\AccessManager;
 use App\Repository\ClientAppRepository;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -49,8 +48,7 @@ class AuthorAccessManagerTest extends TestCase
             ->setId(1)
             ->setName("App name")
             ->setToken("App token")
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
         $this->clientApp1 = $clientApp1;
 
         $clientApp2 = new ClientApp();
@@ -58,8 +56,7 @@ class AuthorAccessManagerTest extends TestCase
             ->setId(2)
             ->setName("App name2")
             ->setToken("App token2")
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
         $this->clientApp2 = $clientApp2;
 
         $this->author1 = new Author();
@@ -84,8 +81,7 @@ class AuthorAccessManagerTest extends TestCase
         return \Mockery::mock(RequestStack::class)
             ->shouldReceive('getCurrentRequest')
             ->andReturn($request)
-            ->getMock()
-            ;
+            ->getMock();
     }
 
     /**
@@ -102,8 +98,7 @@ class AuthorAccessManagerTest extends TestCase
         return \Mockery::mock(RequestStack::class)
             ->shouldReceive('getCurrentRequest')
             ->andReturn($request)
-            ->getMock()
-            ;
+            ->getMock();
     }
 
     /**
@@ -114,8 +109,7 @@ class AuthorAccessManagerTest extends TestCase
         return \Mockery::mock(ClientAppRepository::class)
             ->shouldReceive('findByToken')
             ->andReturn($this->clientApp1)
-            ->getMock()
-        ;
+            ->getMock();
     }
 
     public function testClientAppIsAssociatedWithAuthor()

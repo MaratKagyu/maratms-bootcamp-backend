@@ -27,8 +27,7 @@ class AuthorTest extends TestCase
             ->setId(3)
             ->setName("App name")
             ->setToken("App token")
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
         $this->clientApp1 = $clientApp1;
 
     }
@@ -52,8 +51,7 @@ class AuthorTest extends TestCase
         $author
             ->setId(11)
             ->setOwnerApp($this->clientApp1)
-            ->setName($authorName)
-        ;
+            ->setName($authorName);
 
         $updatedValues = [
             "id" => 11,

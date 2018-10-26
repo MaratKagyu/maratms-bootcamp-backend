@@ -31,18 +31,17 @@ class QuoteFixture extends Fixture
         $clientApp1 = $clientAppRepo->find(1);
         $clientApp2 = $clientAppRepo->find(2);
 
-        if (! ($clientApp1 && $clientApp2)) {
+        if (!($clientApp1 && $clientApp2)) {
             throw new TestException("Couldn't load test client apps");
         }
 
         /* @var Author[] $authorList */
         $authorList = array_map(
-            function ($authorData) use ($manager){
+            function ($authorData) use ($manager) {
                 $author = new Author();
                 $author
                     ->setName($authorData['name'])
-                    ->setOwnerApp($authorData['clientApp'])
-                ;
+                    ->setOwnerApp($authorData['clientApp']);
 
                 $manager->persist($author);
                 return $author;
@@ -68,7 +67,6 @@ class QuoteFixture extends Fixture
         );
 
 
-
         $quotesDataList = [
             [// 1
                 "author" => $authorList[0],
@@ -80,7 +78,7 @@ class QuoteFixture extends Fixture
                     . "in which you first find yourself.",
             ],
             [// 3
-                "author"  => $authorList[2],
+                "author" => $authorList[2],
                 "text" => "Twenty years from now you will be more disappointed by the things that you didn’t do than "
                     . "by the ones you did do.",
             ],
@@ -105,8 +103,7 @@ class QuoteFixture extends Fixture
             $quote
                 ->setAuthor($author)
                 ->setText($quoteData['text'])
-                ->setOwnerApp($author->getOwnerApp())
-            ;
+                ->setOwnerApp($author->getOwnerApp());
 
             $manager->persist($quote);
         }

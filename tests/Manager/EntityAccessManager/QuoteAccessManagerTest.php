@@ -14,7 +14,6 @@ use App\Manager\EntityAccessManager\QuoteAccessManager;
 use PHPUnit\Framework\TestCase;
 use App\Entity\ClientApp;
 use App\Exception\HttpJsonException;
-use App\Manager\AccessManager;
 use App\Repository\ClientAppRepository;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -50,8 +49,7 @@ class QuoteAccessManagerTest extends TestCase
             ->setId(1)
             ->setName("App name")
             ->setToken("App token")
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
         $this->clientApp1 = $clientApp1;
 
         $clientApp2 = new ClientApp();
@@ -59,8 +57,7 @@ class QuoteAccessManagerTest extends TestCase
             ->setId(2)
             ->setName("App name2")
             ->setToken("App token2")
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
         $this->clientApp2 = $clientApp2;
 
         $author1 = new Author();
@@ -72,14 +69,12 @@ class QuoteAccessManagerTest extends TestCase
         $this->quote1 = new Quote();
         $this->quote1
             ->setOwnerApp($clientApp1)
-            ->setAuthor($author1)
-        ;
+            ->setAuthor($author1);
 
         $this->quote2 = new Quote();
         $this->quote2
             ->setOwnerApp($clientApp2)
-            ->setAuthor($author2)
-        ;
+            ->setAuthor($author2);
     }
 
 
@@ -97,8 +92,7 @@ class QuoteAccessManagerTest extends TestCase
         return \Mockery::mock(RequestStack::class)
             ->shouldReceive('getCurrentRequest')
             ->andReturn($request)
-            ->getMock()
-            ;
+            ->getMock();
     }
 
     /**
@@ -115,8 +109,7 @@ class QuoteAccessManagerTest extends TestCase
         return \Mockery::mock(RequestStack::class)
             ->shouldReceive('getCurrentRequest')
             ->andReturn($request)
-            ->getMock()
-            ;
+            ->getMock();
     }
 
     /**
@@ -127,8 +120,7 @@ class QuoteAccessManagerTest extends TestCase
         return \Mockery::mock(ClientAppRepository::class)
             ->shouldReceive('findByToken')
             ->andReturn($this->clientApp1)
-            ->getMock()
-        ;
+            ->getMock();
     }
 
     public function testClientAppIsAssociatedWithQuote()

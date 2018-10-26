@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 use App\Entity\Quote;
+use App\Exception\CommonExceptions;
 use App\Exception\HttpJsonException;
 use App\Manager\EntityAccessManager\AuthorAccessManager;
 use App\Manager\EntityAccessManager\QuoteAccessManager;
@@ -18,7 +19,6 @@ use App\Service\Validator;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 
 class QuotesController extends Controller
 {
@@ -61,8 +61,8 @@ class QuotesController extends Controller
         $accessManager->authenticationRequired();
 
         $quote = $quoteRepository->getRandomQuoteByOwnerApp($accessManager->getClientApp());
-        if (! $quote) {
-            throw new HttpJsonException([
+        if (!$quote) {
+            $this->json([
                 "status" => "error",
                 "message" => "No quotes found",
                 "code" => "quotes_not_found",
@@ -92,15 +92,11 @@ class QuotesController extends Controller
         AuthorAccessManager $accessManager,
         QuoteRepository $quoteRepository,
         AuthorRepository $authorRepository
-    ) {
+    )
+    {
         $author = $authorRepository->find($authorId);
-        if (! $author) {
-            throw new HttpJsonException([
-                "status" => "error",
-                "message" => "Author not found",
-                "code" => "author_not_found",
-                "authorId" => $authorId,
-            ], 404);
+        if (!$author) {
+            throw CommonExceptions::createAuthorNotFoundException($authorId);
         }
 
         $accessManager->readAccessRequired($author);
@@ -130,17 +126,13 @@ class QuotesController extends Controller
         int $quoteId,
         QuoteAccessManager $accessManager,
         QuoteRepository $quoteRepository
-    ) {
+    )
+    {
         $accessManager->authenticationRequired();
 
         $quote = $quoteRepository->find($quoteId);
-        if (! $quote) {
-            throw new HttpJsonException([
-                "status" => "error",
-                "message" => "Quote not found",
-                "code" => "quote_not_found",
-                "quoteId" => $quoteId,
-            ], 404);
+        if (!$quote) {
+            throw CommonExceptions::createQuoteNotFoundException($quoteId);
 
         } else {
             // Throws a forbidden error, in the app doesn't have the access
@@ -174,7 +166,8 @@ class QuotesController extends Controller
         QuoteRepository $quoteRepository,
         AuthorRepository $authorRepository,
         Validator $validator
-    ) {
+    )
+    {
         $accessManager->authenticationRequired();
 
         $em = $this->getDoctrine()->getManager();
@@ -182,13 +175,8 @@ class QuotesController extends Controller
         if ($quoteId) {
             $quote = $quoteRepository->find($quoteId);
 
-            if (! $quote) {
-                throw new HttpJsonException([
-                    "status" => "error",
-                    "message" => "Quote not found",
-                    "code" => "quote_not_found",
-                    "quoteId" => $quoteId,
-                ], 404);
+            if (!$quote) {
+                throw CommonExceptions::createQuoteNotFoundException($quoteId);
             }
 
             // Throws a forbidden error, in the app doesn't have the access
@@ -214,11 +202,11 @@ class QuotesController extends Controller
         if ($previousAuthor && ($previousAuthor->getId() !== $author->getId())) {
             $quoteList = array_filter(
                 $quoteRepository->findByAuthor($previousAuthor),
-                function (Quote $quote) use ($quoteId){
+                function (Quote $quote) use ($quoteId) {
                     return $quote->getId() != $quoteId;
                 }
             );
-            if (! count($quoteList)) {
+            if (!count($quoteList)) {
                 $em->remove($previousAuthor);
             }
         }
@@ -226,8 +214,7 @@ class QuotesController extends Controller
         $quote
             ->setAuthor($author)
             ->setText($text)
-            ->setLastChangedDateTime(new \DateTime())
-        ;
+            ->setLastChangedDateTime(new \DateTime());
 
         $em->flush();
 
@@ -252,20 +239,16 @@ class QuotesController extends Controller
         int $quoteId,
         QuoteAccessManager $accessManager,
         QuoteRepository $quoteRepository
-    ) {
+    )
+    {
         $accessManager->authenticationRequired();
 
         $em = $this->getDoctrine()->getManager();
 
         $quote = $quoteRepository->find($quoteId);
 
-        if (! $quote) {
-            throw new HttpJsonException([
-                "status" => "error",
-                "message" => "Quote not found",
-                "code" => "quote_not_found",
-                "quoteId" => $quoteId,
-            ], 404);
+        if (!$quote) {
+            throw CommonExceptions::createQuoteNotFoundException($quoteId);
         }
 
         // Throws a forbidden error, in the app doesn't have the access
@@ -276,11 +259,11 @@ class QuotesController extends Controller
         if ($author) {
             $quoteList = array_filter(
                 $quoteRepository->findByAuthor($author),
-                function (Quote $quote) use ($quoteId){
+                function (Quote $quote) use ($quoteId) {
                     return $quote->getId() != $quoteId;
                 }
             );
-            if (! count($quoteList)) {
+            if (!count($quoteList)) {
                 $em->remove($author);
             }
         }

@@ -56,7 +56,7 @@ class AccessManager
     private function getToken(): ?string
     {
         $token = $this->getRequest()->request->get('token', null);
-        if (! $token) {
+        if (!$token) {
             $token = $this->getRequest()->query->get('token', null);
         }
         return $token;
@@ -67,9 +67,9 @@ class AccessManager
      */
     public function getClientApp(): ?ClientApp
     {
-        if (! $this->clientApp) {
+        if (!$this->clientApp) {
             $token = $this->getToken();
-            if (! $token) {
+            if (!$token) {
                 return null;
             }
             $this->clientApp = $token ? $this->clientAppRepo->findByToken($token) : null;
@@ -83,7 +83,7 @@ class AccessManager
      */
     public function authenticationRequired(): bool
     {
-        if (! $this->getClientApp()) {
+        if (!$this->getClientApp()) {
             throw new HttpJsonException([
                 "status" => "error",
                 "message" => "Authentication required",

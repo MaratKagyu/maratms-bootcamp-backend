@@ -36,8 +36,7 @@ class AccessManagerTest extends TestCase
         return \Mockery::mock(RequestStack::class)
             ->shouldReceive('getCurrentRequest')
             ->andReturn($request)
-            ->getMock()
-        ;
+            ->getMock();
     }
 
     /**
@@ -54,8 +53,7 @@ class AccessManagerTest extends TestCase
         return \Mockery::mock(RequestStack::class)
             ->shouldReceive('getCurrentRequest')
             ->andReturn($request)
-            ->getMock()
-            ;
+            ->getMock();
     }
 
     /**
@@ -68,14 +66,12 @@ class AccessManagerTest extends TestCase
             ->setId(1)
             ->setName(self::APP_NAME)
             ->setToken(self::APP_TOKEN)
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
 
         return \Mockery::mock(ClientAppRepository::class)
             ->shouldReceive('findByToken')
             ->andReturn($clientApp)
-            ->getMock()
-        ;
+            ->getMock();
     }
 
     /**
@@ -86,8 +82,7 @@ class AccessManagerTest extends TestCase
         return \Mockery::mock(ClientAppRepository::class)
             ->shouldReceive('findByToken')
             ->andReturnNull()
-            ->getMock()
-            ;
+            ->getMock();
     }
 
     /**

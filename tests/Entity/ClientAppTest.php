@@ -37,8 +37,7 @@ class ClientAppTest extends TestCase
             ->setId(11)
             ->setName($name)
             ->setToken($token)
-            ->setType($type)
-        ;
+            ->setType($type);
 
         $updatedValues = [
             "id" => 11,

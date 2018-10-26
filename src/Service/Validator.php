@@ -28,7 +28,7 @@ class Validator
         $authorName = $quoteData['authorName'] ?? "";
         $text = $quoteData['text'] ?? "";
 
-        if (! ($authorName && $text)) {
+        if (!($authorName && $text)) {
             throw new HttpJsonException([
                 "status" => "error",
                 "message" => "Author name and text are mandatory",

@@ -34,16 +34,14 @@ class QuoteTest extends TestCase
             ->setId(3)
             ->setName("App name")
             ->setToken("App token")
-            ->setType(ClientApp::APP_TYPE_WORDPRESS)
-        ;
+            ->setType(ClientApp::APP_TYPE_WORDPRESS);
         $this->clientApp1 = $clientApp1;
 
 
         $this->author1 = new Author();
         $this->author1
             ->setOwnerApp($this->clientApp1)
-            ->setId(5)
-        ;
+            ->setId(5);
     }
 
     public function testToArray()
@@ -67,8 +65,7 @@ class QuoteTest extends TestCase
             ->setId(11)
             ->setAuthor($this->author1)
             ->setOwnerApp($this->clientApp1)
-            ->setText($quoteText)
-        ;
+            ->setText($quoteText);
 
         $updatedValues = [
             "id" => 11,
@@ -106,8 +103,7 @@ class QuoteTest extends TestCase
             ->setId(11)
             ->setAuthor($this->author1)
             ->setOwnerApp($this->clientApp1)
-            ->setText($quoteText)
-        ;
+            ->setText($quoteText);
 
         $updatedValues = [
             "id" => 11,

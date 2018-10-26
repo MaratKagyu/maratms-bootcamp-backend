@@ -45,7 +45,7 @@ class AuthorAccessManager extends AccessManager
     {
         $this->authenticationRequired();
 
-        if (! $this->isReadable($author)) {
+        if (!$this->isReadable($author)) {
             throw new HttpJsonException([
                 "status" => "error",
                 "message" => "The app doesn't have the access to the author",
@@ -75,7 +75,7 @@ class AuthorAccessManager extends AccessManager
     {
         $this->authenticationRequired();
 
-        if (! $this->isWritable($author)) {
+        if (!$this->isWritable($author)) {
             throw new HttpJsonException([
                 "status" => "error",
                 "message" => "The app cannot write to the author",
